@@ -1,73 +1,79 @@
-# Welcome to your Lovable project
+# Jelajah Budaya Audio
 
-## Project info
+Aplikasi interaktif untuk mengeksplorasi kekayaan budaya melalui audio dengan kontrol pemutaran yang fleksibel (play, pause, percepat, perlambat, ganti bahasa).
 
-**URL**: https://lovable.dev/projects/74b21027-ffa4-44df-839d-e8b7929e2d9d
+## 📦 Teknologi yang Digunakan
 
-## How can I edit this code?
+- **Vite**
+- **React**
+- **TypeScript**
+- **Tailwind CSS**
+- **shadcn-ui**
 
-There are several ways of editing your application.
+## 🚀 Cara Menjalankan Proyek Secara Lokal
 
-**Use Lovable**
+Pastikan kamu sudah menginstal [Node.js & npm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/74b21027-ffa4-44df-839d-e8b7929e2d9d) and start prompting.
+Ikuti langkah berikut:
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# 1. Clone repository-nya
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# 2. Masuk ke folder proyek
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Install dependensi
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Jalankan server pengembangan
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+✏️ Cara Mengedit Proyek
+Kamu bisa mengedit proyek ini melalui:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Editor lokal (IDE)
+Gunakan VS Code atau editor favorit kamu untuk mengedit kode sumber. Setelah selesai, push ke repo GitHub jika perlu kolaborasi atau deployment.
 
-**Use GitHub Codespaces**
+2. GitHub Codespaces (opsional)
+Jika kamu menggunakan GitHub:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Buka halaman utama repository.
 
-## What technologies are used for this project?
+Klik tombol Code → Codespaces.
 
-This project is built with:
+Pilih New Codespace untuk mulai mengedit langsung dari browser.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+3. Edit langsung di GitHub
+Cari file yang ingin diedit.
 
-## How can I deploy this project?
+Klik ikon pensil di kanan atas tampilan file.
 
-Simply open [Lovable](https://lovable.dev/projects/74b21027-ffa4-44df-839d-e8b7929e2d9d) and click on Share -> Publish.
+Lakukan perubahan dan commit.
 
-## Can I connect a custom domain to my Lovable project?
+🌐 Deployment
+Proyek ini dapat dideploy menggunakan platform seperti:
 
-Yes, you can!
+Vercel
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Netlify
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+GitHub Pages (untuk SPA)
+
+Pastikan kamu mengatur file vite.config.ts agar routing SPA tetap berfungsi saat di-deploy ke hosting.
+
+🔗 Fitur Utama
+🎧 Pemutar audio budaya
+
+🇮🇩 Bahasa ganda: Indonesia ↔ Inggris
+
+⏯️ Kontrol: Play, Pause, Skip ±10 detik, Speed ±
+
+🌐 Dukungan media sosial
+
+📱 Tampilan responsif
+
+🛠 Kontak & Kontribusi
+Proyek ini dikembangkan oleh tim KKN KB - Allo Cibaru.
+
+Untuk saran, kontribusi, atau kolaborasi silakan hubungi kami.
