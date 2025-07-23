@@ -87,7 +87,7 @@ const Index = () => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-forest-green/10">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <img src="src/assets/logo.png" alt="Logo Sumpang Bita" className="h-10 " />
+          <img src="/logo.png" alt="Logo Sumpang Bita" className="h-10 " />
           {/* <h1 className="text-xl font-bold text-forest-green-dark">{currentLanguage === "id" ? "Sumpang Bita" : "Sumpang Bita"}</h1> */}
 
           <nav className="hidden md:flex items-center gap-8">
@@ -138,7 +138,7 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <img src="src/assets/logo.png" alt="Logo Sumpang Bita" className="h-14 mb-4" />
+              <img src="/logo.png" alt="Logo Sumpang Bita" className="h-14 mb-4" />
               <p className="text-white/80 leading-relaxed">{currentLanguage === "id" ? "Melestarikan warisan budaya melalui teknologi dan narasi edukatif." : "Preserving cultural heritage through technology and educational narratives."}</p>
             </div>
 
