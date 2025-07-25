@@ -8,7 +8,7 @@ interface NarrativeSectionProps {
 
 const NarrativeSection = ({ title, content, imageUrl }: NarrativeSectionProps) => {
   return (
-    <section className="py-20 bg-background">
+    <section className="rounded-b-lg py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="max-w-6xl mx-auto">
           <Card className="bg-gradient-card shadow-elevated border-forest-green/20 overflow-hidden">
