@@ -113,9 +113,9 @@ const Index = () => {
 
       {/* Audio Player - Fixed when active */}
       {showAudioPlayer && currentAudio && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-background/95 backdrop-blur-sm border-t border-forest-green/20">
+        <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-forest-green/20 backdrop-blur-md shadow-md">
           <div className="container mx-auto max-w-4xl">
-            <AudioPlayer audioSrc={currentAudio.audioUrl} title={currentAudio.title} onProgressChange={handleAudioProgress} initialProgress={audioProgress[currentAudio.id] || 0} />
+            <AudioPlayer audioSrc={currentAudio.audioUrl} title={currentAudio.title} onProgressChange={handleAudioProgress} initialProgress={audioProgress[currentAudio.id] || 0} onClose={() => setShowAudioPlayer(false)} />
           </div>
         </div>
       )}
@@ -131,8 +131,11 @@ const Index = () => {
       </div>
 
       {/* Collaboration Section */}
-      <div> <p className="text-forest-green font-bold text-2xl md:text-4xl text-center">Kolaborasi Bersama</p>
-        <CollaborationSection title={currentContent.collaboration.title} /></div>
+      <div>
+        {" "}
+        <p className="text-forest-green font-bold text-2xl md:text-4xl text-center">Kolaborasi Bersama</p>
+        <CollaborationSection title={currentContent.collaboration.title} />
+      </div>
 
       {/* Footer */}
 
@@ -153,9 +156,9 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="mx-auto">
+            <div>
               <h3 className="text-xl font-bold mb-4">{currentLanguage === "id" ? "Ikuti Kami" : "Follow Us"}</h3>
-              <div className="flex gap-6 text-white/80 items-center">
+              <div className="flex flex-wrap gap-x-6 gap-y-4 text-white/80 items-center">
                 <a href="https://www.instagram.com/caritana_baloccibaru" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition">
                   <Instagram className="w-5 h-5" />
                   Instagram
