@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Play, Pause, SkipBack, SkipForward, Volume2, X } from "lucide-react";
 
 interface AudioPlayerProps {
   audioSrc: string;
@@ -10,17 +10,35 @@ interface AudioPlayerProps {
   duration?: number;
   onProgressChange?: (progress: number) => void;
   initialProgress?: number;
+  onClose?: () => void;
 }
 
-const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialProgress = 0 }: AudioPlayerProps) => {
+  
+
+
+const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialProgress = 0, onClose}: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initialProgress);
   const [audioDuration, setAudioDuration] = useState(duration);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [volume, setVolume] = useState(1);
+  const [isVolumeOpen, setIsVolumeOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const volumeRef = useRef<HTMLDivElement>(null);
 
   const playbackSpeeds = [0.75, 1, 1.25, 1.5];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (volumeRef.current && !volumeRef.current.contains(event.target as Node)) {
+        setIsVolumeOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -35,14 +53,14 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
       setAudioDuration(audio.duration);
     };
 
-    audio.addEventListener('timeupdate', updateTime);
-    audio.addEventListener('loadedmetadata', updateDuration);
-    audio.addEventListener('ended', () => setIsPlaying(false));
+    audio.addEventListener("timeupdate", updateTime);
+    audio.addEventListener("loadedmetadata", updateDuration);
+    audio.addEventListener("ended", () => setIsPlaying(false));
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime);
-      audio.removeEventListener('loadedmetadata', updateDuration);
-      audio.removeEventListener('ended', () => setIsPlaying(false));
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("ended", () => setIsPlaying(false));
     };
   }, [onProgressChange]);
 
@@ -55,13 +73,21 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    
+
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    const newVolume = value[0];
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
   };
 
   const skip = (seconds: number) => {
@@ -88,36 +114,38 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
     }
   };
 
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
-
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  const handlePlayerClose = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      setCurrentTime(0);
+    }
+
+    onClose?.();
   };
 
   return (
-    <Card className="p-6 bg-gradient-card shadow-nature border-forest-green/20">
+    <Card className="p-6 bg-gradient-card shadow-nature border-forest-green/20 relative">
       <audio ref={audioRef} src={audioSrc} preload="metadata" />
-      
+
+      <div className="absolute top-4 right-4">
+        <Button variant="ghost" size="icon" onClick={handlePlayerClose}>
+          <X className="h-4 w-4 text-forest-green" />
+        </Button>
+      </div>
+
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-forest-green-dark">{title}</h3>
-        
+
         {/* Progress Bar */}
         <div className="space-y-2">
-          <Slider
-            value={[currentTime]}
-            max={audioDuration}
-            step={1}
-            onValueChange={handleProgressChange}
-            className="w-full"
-          />
+          <Slider value={[currentTime]} max={audioDuration} step={1} onValueChange={handleProgressChange} className="w-full" />
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(audioDuration)}</span>
@@ -125,56 +153,61 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
         </div>
 
         {/* Controls */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <Button
-              onClick={() => skip(-10)}
-              variant="outline"
-              size="sm"
-              className="border-forest-green/30 hover:bg-forest-green/10"
-            >
+            <Button onClick={() => skip(-10)} variant="outline" size="sm" className="border-forest-green/30 hover:bg-forest-green/10">
               <SkipBack className="h-4 w-4" />
               10s
             </Button>
-            
-            <Button
-              onClick={togglePlay}
-              className="bg-forest-green hover:bg-forest-green-dark"
-            >
+
+            <Button onClick={togglePlay} className="bg-forest-green hover:bg-forest-green-dark">
               {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
             </Button>
-            
-            <Button
-              onClick={() => skip(10)}
-              variant="outline"
-              size="sm"
-              className="border-forest-green/30 hover:bg-forest-green/10"
-            >
+
+            <Button onClick={() => skip(10)} variant="outline" size="sm" className="border-forest-green/30 hover:bg-forest-green/10">
               <SkipForward className="h-4 w-4" />
               10s
             </Button>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Volume Control */}
-            <div className="flex items-center gap-2">
-              <Volume2 className="h-4 w-4 text-muted-foreground" />
-              <Slider
-                value={[volume]}
-                max={1}
-                step={0.1}
-                onValueChange={handleVolumeChange}
-                className="w-20"
-              />
+          <div className="flex items-center gap-4 relative">
+            {/* Volume Toggle Button */}
+            <div ref={volumeRef} className="relative">
+              <Button variant="ghost" size="icon" onClick={() => setIsVolumeOpen((prev) => !prev)}>
+                <Volume2 className="h-4 w-4 text-muted-foreground" />
+              </Button>
+
+              {isVolumeOpen && (
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white p-3 rounded shadow-lg z-50 flex flex-col items-center space-y-1">
+                  {/* Volume Track */}
+                  <div
+                    className="h-24 w-4 bg-gray-200 rounded-full relative cursor-pointer"
+                    onClick={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const clickY = e.clientY - rect.top;
+                      const height = rect.height;
+                      const newVolume = 1 - clickY / height;
+                      setVolume(newVolume);
+                      if (audioRef.current) {
+                        audioRef.current.volume = newVolume;
+                      }
+                    }}
+                  >
+                    {/* Fill */}
+                    <div className="absolute bottom-0 left-0 w-full bg-forest-green rounded-full transition-all duration-150" style={{ height: `${volume * 100}%` }} />
+
+                    {/* Thumb */}
+                    <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-white border border-forest-green rounded-full shadow transition-all duration-150" style={{ bottom: `calc(${volume * 100}% - 0.5rem)` }} />
+                  </div>
+
+                  {/* Percentage Display */}
+                  <span className="text-xs text-muted-foreground">{Math.round(volume * 100)}%</span>
+                </div>
+              )}
             </div>
 
             {/* Speed Control */}
-            <Button
-              onClick={changePlaybackRate}
-              variant="outline"
-              size="sm"
-              className="border-forest-green/30 hover:bg-forest-green/10 min-w-[60px]"
-            >
+            <Button onClick={changePlaybackRate} variant="outline" size="sm" className="border-forest-green/30 hover:bg-forest-green/10 min-w-[60px]">
               {playbackRate}x
             </Button>
           </div>
