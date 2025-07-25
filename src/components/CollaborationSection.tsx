@@ -1,3 +1,4 @@
+import logo from "@/assets/partners/logokolab.png";
 import ui from "@/assets/partners/logokolab1.png";
 import kemdikbud from "@/assets/partners/logokolab2.png";
 import balar from "@/assets/partners/logokolab3.png";
@@ -13,7 +14,7 @@ interface CollaborationSectionProps {
 }
 
 const CollaborationSection = ({ title }: CollaborationSectionProps) => {
-  const partnerLogos = [ui, kemdikbud, balar, unesco, maros, komunitas, dirjen];
+  const partnerLogos = [dirjen, komunitas, maros, unesco, balar, kemdikbud, ui, logo];
 
   return (
     <section className="py-10 bg-none">
@@ -21,7 +22,7 @@ const CollaborationSection = ({ title }: CollaborationSectionProps) => {
       <div className="overflow-hidden py-10 relative">
         <div className="animate-slide-left whitespace-nowrap flex gap-16">
           {partnerLogos.concat(partnerLogos).map((logo, index) => (
-            <img key={index} src={logo} alt={`partner-${index}`} className="h-16 w-auto object-contain" />
+            <img key={index} src={logo} alt={`partner-${index}`} className="h-24 w-auto object-contain" />
           ))}
         </div>
       </div>

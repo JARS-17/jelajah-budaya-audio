@@ -131,10 +131,12 @@ const Index = () => {
       </div>
 
       {/* Collaboration Section */}
-      <CollaborationSection title={currentContent.collaboration.title} />
+      <div> <p className="text-forest-green font-bold text-2xl md:text-4xl text-center">Kolaborasi Bersama</p>
+        <CollaborationSection title={currentContent.collaboration.title} /></div>
 
       {/* Footer */}
-      <footer className="bg-forest-green-dark text-white py-12">
+
+      <footer className="w-full bg-forest-green-dark text-white py-12">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
@@ -151,7 +153,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div>
+            <div className="mx-auto">
               <h3 className="text-xl font-bold mb-4">{currentLanguage === "id" ? "Ikuti Kami" : "Follow Us"}</h3>
               <div className="flex gap-6 text-white/80 items-center">
                 <a href="https://www.instagram.com/caritana_baloccibaru" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition">
