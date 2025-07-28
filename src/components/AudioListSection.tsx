@@ -14,7 +14,7 @@ const AudioListSection = ({ title, audioItems, onPlayAudio, activeAudioId }: Aud
       <div className="container mx-auto px-6">
         <h2 className="text-3xl md:text-5xl font-bold text-center text-forest-green-dark mb-16 animate-fade-in">{title}</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
           {audioItems.map((audio, index) => (
             <div key={audio.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <AudioCard title={audio.title} description={audio.description} imageUrl={audio.imageUrl} duration={audio.duration} onPlay={() => onPlayAudio(audio)} isActive={activeAudioId === audio.id} />

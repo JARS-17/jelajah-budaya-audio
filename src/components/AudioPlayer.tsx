@@ -13,21 +13,20 @@ interface AudioPlayerProps {
   onClose?: () => void;
 }
 
-  
-
-
-const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialProgress = 0, onClose}: AudioPlayerProps) => {
+const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialProgress = 0, onClose }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initialProgress);
   const [audioDuration, setAudioDuration] = useState(duration);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [volume, setVolume] = useState(1);
+  const [progress, setProgress] = useState(0);
   const [isVolumeOpen, setIsVolumeOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
 
   const playbackSpeeds = [0.75, 1, 1.25, 1.5];
 
+  // Close volume when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (volumeRef.current && !volumeRef.current.contains(event.target as Node)) {
@@ -40,77 +39,101 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
     };
   }, []);
 
+  // Setup audio event listeners and sync progress
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => {
-      setCurrentTime(audio.currentTime);
-      onProgressChange?.(audio.currentTime);
+    const updateProgress = () => {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      setProgress(progress || 0);
     };
 
     const updateDuration = () => {
-      setAudioDuration(audio.duration);
+      setAudioDuration(audio.duration || 0);
     };
 
-    audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", updateDuration);
-    audio.addEventListener("ended", () => setIsPlaying(false));
-
-    return () => {
-      audio.removeEventListener("timeupdate", updateTime);
-      audio.removeEventListener("loadedmetadata", updateDuration);
-      audio.removeEventListener("ended", () => setIsPlaying(false));
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
     };
-  }, [onProgressChange]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = initialProgress;
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    if (initialProgress > 0) {
+      audio.currentTime = initialProgress;
       setCurrentTime(initialProgress);
     }
-  }, [initialProgress]);
 
-  const togglePlay = () => {
-    if (!audioRef.current) return;
+    // Apply volume & playback rate
+    audio.volume = volume;
+    audio.playbackRate = playbackRate;
+
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("loadedmetadata",updateDuration);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
+
+    return () => {
+      audio.removeEventListener("timeupdate", updateProgress);
+      audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
+    };
+  }, [initialProgress, volume, playbackRate, onProgressChange]);
+
+  // Update volume on state change
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  const togglePlay = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
+      setIsPlaying(false);
     } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.error("Audio play failed:", err);
+      }
     }
   };
 
   const skip = (seconds: number) => {
-    if (!audioRef.current) return;
-    const newTime = Math.max(0, Math.min(audioDuration, audioRef.current.currentTime + seconds));
-    audioRef.current.currentTime = newTime;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newTime = Math.max(0, Math.min(audio.duration, audio.currentTime + seconds));
+    audio.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
-  const handleProgressChange = (value: number[]) => {
-    if (!audioRef.current) return;
-    const newTime = value[0];
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
+  // const handleProgressChange = (value: number[]) => {
+  //   const audio = audioRef.current;
+  //   if (!audio) return;
+
+  //   const newTime = value[0];
+  //   audio.currentTime = newTime;
+  //   setCurrentTime(newTime);
+  // };
 
   const changePlaybackRate = () => {
     const currentIndex = playbackSpeeds.indexOf(playbackRate);
-    const nextIndex = (currentIndex + 1) % playbackSpeeds.length;
-    const newRate = playbackSpeeds[nextIndex];
-    setPlaybackRate(newRate);
+    const nextRate = playbackSpeeds[(currentIndex + 1) % playbackSpeeds.length];
+    setPlaybackRate(nextRate);
+
     if (audioRef.current) {
-      audioRef.current.playbackRate = newRate;
+      audioRef.current.playbackRate = nextRate;
     }
   };
 
@@ -123,10 +146,9 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
   const handlePlayerClose = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setIsPlaying(false);
-      setCurrentTime(0);
     }
-
+    setIsPlaying(false);
+    setCurrentTime(0);
     onClose?.();
   };
 
@@ -144,13 +166,13 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
         <h3 className="text-lg font-semibold text-forest-green-dark">{title}</h3>
 
         {/* Progress Bar */}
-        <div className="space-y-2">
-          <Slider value={[currentTime]} max={audioDuration} step={1} onValueChange={handleProgressChange} className="w-full" />
+        {/* <div className="space-y-2">
+          <Slider value={[currentTime]} max={audioDuration} step={0.1} onValueChange={handleProgressChange} className="w-full" />
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(audioDuration)}</span>
-          </div>
-        </div>
+          </div>      
+        </div> */}
 
         {/* Controls */}
         <div className="flex items-center justify-between flex-wrap gap-2">
@@ -171,7 +193,7 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
           </div>
 
           <div className="flex items-center gap-4 relative">
-            {/* Volume Toggle Button */}
+            {/* Volume Control */}
             <div ref={volumeRef} className="relative">
               <Button variant="ghost" size="icon" onClick={() => setIsVolumeOpen((prev) => !prev)}>
                 <Volume2 className="h-4 w-4 text-muted-foreground" />
@@ -179,28 +201,19 @@ const AudioPlayer = ({ audioSrc, title, duration = 0, onProgressChange, initialP
 
               {isVolumeOpen && (
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white p-3 rounded shadow-lg z-50 flex flex-col items-center space-y-1">
-                  {/* Volume Track */}
                   <div
                     className="h-24 w-4 bg-gray-200 rounded-full relative cursor-pointer"
                     onClick={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const clickY = e.clientY - rect.top;
                       const height = rect.height;
-                      const newVolume = 1 - clickY / height;
+                      const newVolume = Math.max(0, Math.min(1, 1 - clickY / height));
                       setVolume(newVolume);
-                      if (audioRef.current) {
-                        audioRef.current.volume = newVolume;
-                      }
                     }}
                   >
-                    {/* Fill */}
                     <div className="absolute bottom-0 left-0 w-full bg-forest-green rounded-full transition-all duration-150" style={{ height: `${volume * 100}%` }} />
-
-                    {/* Thumb */}
                     <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-white border border-forest-green rounded-full shadow transition-all duration-150" style={{ bottom: `calc(${volume * 100}% - 0.5rem)` }} />
                   </div>
-
-                  {/* Percentage Display */}
                   <span className="text-xs text-muted-foreground">{Math.round(volume * 100)}%</span>
                 </div>
               )}
