@@ -43,7 +43,7 @@ export const content: Record<string, Content> = {
           description: "Mulai perjalananmu dengan narasi singkat tentang asal-usul Sumpang Bita, warisan budaya, dan jejak peradaban prasejarah.",
           imageUrl: "/Frame01.png",
           audioUrl: "/audio-id/audio-1-id.mp3",
-          duration: "0:57",
+          duration: "0:59",
         },
         {
           id: "map",

@@ -36,13 +36,13 @@ const AudioCard = ({ title, description, imageUrl, duration, onPlay, isActive = 
       
       <CardContent className="bg-white p-6 rounded-b-lg flex flex-col flex-grow">
         <div className="flex-grow">
-          <h3 className="text-xl font-semibold text-forest-green-dark mb-2 group-hover:text-forest-green transition-colors">{title}</h3>
-          <p className="text-muted-foreground leading-relaxed">{description}</p>
+          <h3 className="text-l md:text-xl font-semibold text-forest-green-dark mb-2 group-hover:text-forest-green transition-colors">{title}</h3>
+          <p className="text-xs md:text-base text-muted-foreground leading-relaxed">{description}</p>
         </div>
 
         <Button onClick={onPlay} variant="outline" className="w-full mt-4 border-forest-green/30 hover:bg-forest-green/10 text-forest-green">
           <Play className="h-4 w-4 mr-2" />
-          Putar Audio
+          <p className="text-xs md:text-base">Putar Audio</p>
         </Button>
       </CardContent>
     </Card>
